@@ -89,16 +89,17 @@ void setup() {
 bool rendered = false;
 
 void loop() {
-
-  uint16_t x = 96;
-  uint16_t y = 56;
+  
   uint16_t width = 128;
-  uint16_t height = 128;
-  /*
+  uint16_t height = 64;
+
   if( !hasPsram ) {
-    width = 128;
-    height = 128;    
-  }*/
+    if(width>128)  width  = 128;
+    if(height>128) height = 128;    
+  }
+
+  uint16_t x = (M5.Lcd.width() - width) / 2;
+  uint16_t y = (M5.Lcd.height() - height) / 2;
 
   char * fName = NULL;
   fName = (char*)malloc(32);
