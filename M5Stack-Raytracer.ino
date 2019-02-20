@@ -76,6 +76,10 @@ void setup() {
     hasPsram = true;
   }
 
+  if(!SD.exists("/jpg")) {
+    SD.mkdir("/jpg");
+  }
+
   tinyRayTracerInit();
   tinyJpegEncoderInit();
 
@@ -118,7 +122,7 @@ void loop() {
 
     for(byte framenum=0; framenum<looplength;framenum++) {
 
-      sprintf(fName, "/out%d.jpg", framenum);
+      sprintf(fName, "/jpg/out%d.jpg", framenum);
       const char* jpegFileName = fName;
       float myfov = 0.5 + (float)framenum / looplength;
 
@@ -157,7 +161,7 @@ void loop() {
   }
 
   for(byte framenum=0; framenum<looplength; framenum++) {
-    sprintf(fName, "/out%d.jpg", framenum);
+    sprintf(fName, "/jpg/out%d.jpg", framenum);
     const char* jpegFileName = fName;
     M5.Lcd.drawJpgFile(SD, jpegFileName, x, y, width, height, 0, 0, JPEG_DIV_NONE);
   }
