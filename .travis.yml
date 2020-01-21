@@ -62,6 +62,7 @@ install:
   - set_sketchbook_folder "$SKETCHBOOK_FOLDER"
   - install_ide '("1.8.0" "1.8.9" "newest")'
   - install_library "https://github.com/tobozo/M5Stack-SD-Updater.git"
+  - install_library "https://github.com/tobozo/ESP32-Chimera-Core.git"
   #- source "${HOME}/scripts/M5Stack-App-Registry/tools/common.sh"
   - install_package "esp32:esp32" "https://dl.espressif.com/dl/package_esp32_index.json" #  # esp32:esp32:m5stack-core-esp32
   - export arduino_installed=1
