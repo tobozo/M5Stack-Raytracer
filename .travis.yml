@@ -24,7 +24,8 @@ env:
     
     - APP_ROOTURL="https://phpsecu.re/m5stack" # https://registry.site/root-folder
     - APP_PATH="apps-awaiting/tobozo/M5Stack-Raytracer.json" # /path/to/author/project.json
-    - WORK_DIR=$TRAVIS_BUILD_DIR #- WORK_DIR: ${{ '/home/runner/work' }}
+    - WORK_DIR=$TRAVIS_BUILD_DIR../ #- WORK_DIR: ${{ '/home/runner/work' }}
+    - WORK_SPACE=$TRAVIS_BUILD_DIR
     
     #- WORK_DIR: ${{ '/home/runner/work' }}
     #- WORK_SPACE: ${{ github.workspace }}
