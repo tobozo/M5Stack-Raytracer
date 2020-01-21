@@ -10,6 +10,8 @@ bool hasPsram = false;
 #include <M5StackUpdater.h>   // https://github.com/tobozo/M5Stack-SD-Updater/
 
 
+
+
 struct point {
   float initialx;
   float initialy;
@@ -87,19 +89,19 @@ void setup() {
   M5.Lcd.setRotation( 1 );
   M5.Lcd.setTextColor(YELLOW);
   M5.Lcd.fillScreen(BLACK);
- 
+
 }
 
 bool rendered = false;
 
 void loop() {
-  
+
   uint16_t width = 128;
   uint16_t height = 64;
 
   if( !hasPsram ) {
     if(width>128)  width  = 128;
-    if(height>128) height = 128;    
+    if(height>128) height = 128;
   }
 
   uint16_t x = (M5.Lcd.width() - width) / 2;
@@ -133,9 +135,9 @@ void loop() {
       //ivoryColor.r = fabs(.1*sin( ((float)framenum/looplength)*PI*2 )) + .3;
       //ivoryColor.g = ivoryColor.r;
       //ivoryColor.b = ivoryColor.r - 0.1;
-  
+
       raytrace(x, y, width, height, 0.6);
-  
+
       if ( !tje_encode_to_file(jpegFileName, width, height, 3 /*3=RGB,4=RGBA*/, rgbBuffer) ) {
         Serial.println("Could not write JPEG\n");
       } else {
@@ -148,7 +150,7 @@ void loop() {
 
         float framelen = ( (millis() - started) / (framenum+1) ) / 1000;
         int remaining = (looplength - framenum) * framelen;
-        
+
         M5.Lcd.printf("Estimated time remaining: %d seconds", remaining);
         M5.Lcd.drawJpgFile(SD, jpegFileName, x, y, width, height, 0, 0, JPEG_DIV_NONE);
       }
@@ -166,5 +168,5 @@ void loop() {
     M5.Lcd.drawJpgFile(SD, jpegFileName, x, y, width, height, 0, 0, JPEG_DIV_NONE);
   }
 
-  
+
 }
