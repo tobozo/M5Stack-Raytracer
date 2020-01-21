@@ -14,13 +14,16 @@
 language: generic
 env:
   global:
-    - IDE_VERSION=1.8.9
+    - IDE_VERSION=1.8.10
     - REPO_NAME=M5Stack-SD-Updater
     - SDAPP_FOLDER=$PWD/examples/M5Stack-SD-Menu/SD-Apps
     - TRAVIS_TAG="v0.4.1"
     - M5_SD_BUILD_DIR=$TRAVIS_BUILD_DIR/build/SD-Content
     - APPLICATION_FOLDER="${HOME}/arduino-ide"
     - SKETCHBOOK_FOLDER="${HOME}/arduino-sketchbook"
+    
+    - APP_ROOTURL="https://phpsecu.re/m5stack" # https://registry.site/root-folder
+    - APP_PATH="apps-awaiting/tobozo/M5Stack-Raytracer.json" # /path/to/author/project.json
     
     #- WORK_DIR: ${{ '/home/runner/work' }}
     #- WORK_SPACE: ${{ github.workspace }}
@@ -39,7 +42,7 @@ env:
     
   matrix:
     - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:m5stack-core-esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder.zip"
-    - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:odroid_esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder-odroid.zip"  
+    # - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:odroid_esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder-odroid.zip"  
     # - EXAMPLE="M5Stack-SDLoader-Snippet" BOARD="espressif:esp32:m5stack-core-esp32:FlashFreq=80"
 before_install:
   #- $SDAPP_FOLDER/install_arduino.sh
@@ -59,7 +62,7 @@ install:
   - pip install wheel pyserial
   - set_application_folder "$APPLICATION_FOLDER"
   - set_sketchbook_folder "$SKETCHBOOK_FOLDER"
-  - install_ide '("1.8.0" "1.8.9" "newest")'
+  - install_ide '($IDE_VERSION)'
   - install_library "https://github.com/tobozo/M5Stack-SD-Updater.git"
   - install_library "https://github.com/tobozo/ESP32-Chimera-Core.git"
   #- source "${HOME}/scripts/M5Stack-App-Registry/tools/common.sh"
@@ -78,10 +81,10 @@ install:
   #- ./get-deps.sh
 
 script:
-  - build_sketch "${TRAVIS_BUILD_DIR}/M5Stack-Raytracer.ino" "esp32:esp32:m5stack-core-esp32:FlashFreq=80,UploadSpeed=921600" "false" "oldest" "newest"
-  
-  #- export REMOTE_APP_URL=$APP_ROOTURL/$APP_PATH
-  #- source $WORK_SPACE/tools/common.sh
+  - build_sketch "${TRAVIS_BUILD_DIR}/M5Stack-Raytracer.ino" "esp32:esp32:m5stack-core-esp32:FlashFreq=80,UploadSpeed=921600" "false" "IDE_VERSION"
+  - ls ~/Arduino/libraries -la
+  - export REMOTE_APP_URL=$APP_ROOTURL/$APP_PATH
+  - source ~/Arduino/libraries/M5Stack-SD-Updater/tools/common.sh
   #- get_remote_app $REMOTE_APP_URL
   #- bash $WORK_SPACE/tools/deploy.sh -a$GITHUB_TOKEN -s$GITHUB_REPOSITORY -d$M5_BUILD_DIR
 
