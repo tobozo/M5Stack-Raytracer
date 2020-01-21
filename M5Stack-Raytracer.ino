@@ -4,10 +4,18 @@ bool hasPsram = false;
 #include "FS.h"
 #include "SD.h"
 #include "tinyraytracer.h" // a modified version of https://github.com/ssloy/tinyraytracer
-#include "tiny_jpeg_encoder.h" // a modified version of https://github.com/serge-rgb/TinyJPEG
 
 #include <M5Stack.h>
 #include <M5StackUpdater.h>   // https://github.com/tobozo/M5Stack-SD-Updater/
+
+#ifdef _CHIMERA_CORE_
+  #include "utility/TinyJPEGEncoder.h" // a modified version of https://github.com/serge-rgb/TinyJPEG
+  JPEG_Encoder JPEGEncoder;
+#else
+  #include "tiny_jpeg_encoder.h" // a modified version of https://github.com/serge-rgb/TinyJPEG
+#endif
+
+
 
 
 
@@ -83,8 +91,12 @@ void setup() {
   }
 
   tinyRayTracerInit();
+#ifdef _CHIMERA_CORE_
+  JPEGEncoder.init( SD );
+  JPEGEncoder.begin( true );
+#else
   tinyJpegEncoderInit();
-
+#endif
   M5.Lcd.begin();
   M5.Lcd.setRotation( 1 );
   M5.Lcd.setTextColor(YELLOW);
@@ -137,8 +149,12 @@ void loop() {
       //ivoryColor.b = ivoryColor.r - 0.1;
 
       raytrace(x, y, width, height, 0.6);
-
-      if ( !tje_encode_to_file(jpegFileName, width, height, 3 /*3=RGB,4=RGBA*/, rgbBuffer) ) {
+#ifdef _CHIMERA_CORE_
+      if ( !JPEGEncoder.encodeToFile(jpegFileName, width, height, 3 /*3=RGB,4=RGBA*/, rgbBuffer) )
+#else
+      if ( !tje_encode_to_file(jpegFileName, width, height, 3 /*3=RGB,4=RGBA*/, rgbBuffer) )
+#endif
+      {
         Serial.println("Could not write JPEG\n");
       } else {
         Serial.printf("[%d / %d] Rendering saved jpeg %s with fov %f\n", ESP.getFreeHeap(), ESP.getFreePsram(), jpegFileName, myfov);
@@ -157,7 +173,7 @@ void loop() {
     }
     rendered = true;
     unsigned long ended = (millis() - started)/1000;
-    Serial.printf("Rendered animation in %d seconds\n", ended);
+    Serial.printf("Rendered animation in %d seconds\n", (int)ended);
     M5.Lcd.fillRect(0,0,M5.Lcd.width(), 30, 0);
 
   }
