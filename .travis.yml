@@ -84,7 +84,7 @@ script:
   - build_sketch "${TRAVIS_BUILD_DIR}/M5Stack-Raytracer.ino" "esp32:esp32:m5stack-core-esp32:FlashFreq=80,UploadSpeed=921600" "false" "$IDE_VERSION"
   - ls $SKETCHBOOK_FOLDER/libraries -la
   - export REMOTE_APP_URL=$APP_ROOTURL/$APP_PATH
-  - source $SKETCHBOOK_FOLDER/libraries/M5Stack-SD-Updater/tools/common.sh
+  - source $SKETCHBOOK_FOLDER/libraries/M5Stack-SD-Updater/.github/tools/common.sh
   #- get_remote_app $REMOTE_APP_URL
   #- bash $WORK_SPACE/tools/deploy.sh -a$GITHUB_TOKEN -s$GITHUB_REPOSITORY -d$M5_BUILD_DIR
 
