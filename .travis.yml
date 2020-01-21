@@ -1,0 +1,159 @@
+#
+#
+# OVERRIDES: 
+# env:
+#  global:
+#    - IDE_VERSION=$IDE_VERSION
+#    - PLAFORM=$PLATFORM
+#    - SDAPP_FOLDER=$PWD/examples/M5Stack-SD-Menu/SD-Apps
+#  matrix:
+#    - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:m5stack-core-esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder.zip"
+#    - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:odroid_esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder-odroid.zip"
+#
+
+language: generic
+env:
+  global:
+    - IDE_VERSION=1.8.9
+    - REPO_NAME=M5Stack-SD-Updater
+    - SDAPP_FOLDER=$PWD/examples/M5Stack-SD-Menu/SD-Apps
+    - TRAVIS_TAG="v0.4.1"
+    - M5_SD_BUILD_DIR=$TRAVIS_BUILD_DIR/build/SD-Content
+    - APPLICATION_FOLDER="${HOME}/arduino-ide"
+    - SKETCHBOOK_FOLDER="${HOME}/arduino-sketchbook"
+    
+    #- WORK_DIR: ${{ '/home/runner/work' }}
+    #- WORK_SPACE: ${{ github.workspace }}
+    #- M5_SD_BUILD_DIR: ${{ '/home/runner/work/build/SD-Content' }}
+    #- M5_BUILD_DIR: ${{ '/home/runner/work/build/SD-Content' }}
+    #- M5_BURNER_DIR: ${{ '/home/runner/work/build/M5Burner' }}
+    #- SD_UPDATER_BRANCH: ${{ 'master' }} # for the Sd-Updater library (e.g. use 'unstable' for pre-alpha channel)
+    #- M5_CORE_URL: ${{ 'https://github.com/tobozo/ESP32-Chimera-Core' }}
+    #- GITHUB_HOOK_URL: ${{ secrets.GITHUB_HOOK_URL }}
+    #- APP_ROOTURL: ${{ 'https://phpsecu.re/m5stack' }} # https://registry.site/root-folder
+    #- APP_PATH:    ${{ 'apps-awaiting/tobozo/M5Stack-Raytracer.json' }} # /path/to/author/project.json
+    #- GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #- GITHUB_HOOK_SECRET: ${{ secrets.GITHUB_HOOK_SECRET }}
+    #- REMOTE_APP_SLUG: ${{ 'tobozo_M5Stack-Raytracer' }}
+    #- REMOTE_REPO_SLUG: ${{ 'tobozo/M5Stack-Raytracer' }}
+    
+  matrix:
+    - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:m5stack-core-esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder.zip"
+    - EXAMPLE="M5Stack-SD-Menu" BOARD="esp32:esp32:odroid_esp32:FlashFreq=80" ARCHIVE_ZIP="SD-Apps-Folder-odroid.zip"  
+    # - EXAMPLE="M5Stack-SDLoader-Snippet" BOARD="espressif:esp32:m5stack-core-esp32:FlashFreq=80"
+before_install:
+  #- $SDAPP_FOLDER/install_arduino.sh
+  #- cd $TRAVIS_BUILD_DIR ;
+  - git clone https://github.com/per1234/arduino-ci-script.git "${HOME}/scripts/arduino-ci-script"
+  - cd "${HOME}/scripts/arduino-ci-script"
+  # Get new tags from the remote
+  - git fetch --tags
+  # Checkout the latest tag
+  - git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+  - source "${HOME}/scripts/arduino-ci-script/arduino-ci-script.sh"
+  #- git clone https://github.com/tobozo/M5Stack-App-Registry.git "${HOME}/scripts/M5Stack-App-Registry"
+  #- source "${HOME}/scripts/M5Stack-App-Registry/tools/common.sh"
+  
+install:
+  - gem install git.io
+  - pip install wheel pyserial
+  - set_application_folder "$APPLICATION_FOLDER"
+  - set_sketchbook_folder "$SKETCHBOOK_FOLDER"
+  - install_ide '("1.8.0" "1.8.9" "newest")'
+  - install_library "https://github.com/tobozo/M5Stack-SD-Updater.git"
+  - install_library "https://github.com/tobozo/ESP32-Chimera-Core.git"
+  #- source "${HOME}/scripts/M5Stack-App-Registry/tools/common.sh"
+  - install_package "esp32:esp32" "https://dl.espressif.com/dl/package_esp32_index.json" #  # esp32:esp32:m5stack-core-esp32
+  - export arduino_installed=1
+  #- sudo apt install rename imagemagick
+  #- git submodule update --init --recursive
+  #- cd $SDAPP_FOLDER
+  #- git submodule foreach --recursive git pull origin master
+  #- cd $TRAVIS_BUILD_DIR;
+
+  #- mkdir -p ~/Arduino/libraries
+  #- ln -s $PWD ~/Arduino/libraries/.  
+  #- echo "Installing extra libraries"
+  #- cd $SDAPP_FOLDER
+  #- ./get-deps.sh
+
+script:
+  - build_sketch "${TRAVIS_BUILD_DIR}/M5Stack-Raytracer.ino" "esp32:esp32:m5stack-core-esp32:FlashFreq=80,UploadSpeed=921600" "false" "oldest" "newest"
+  
+  #- export REMOTE_APP_URL=$APP_ROOTURL/$APP_PATH
+  #- source $WORK_SPACE/tools/common.sh
+  #- get_remote_app $REMOTE_APP_URL
+  #- bash $WORK_SPACE/tools/deploy.sh -a$GITHUB_TOKEN -s$GITHUB_REPOSITORY -d$M5_BUILD_DIR
+
+  #- cd $TRAVIS_BUILD_DIR;
+  #- arduino --pref "compiler.warning_level=none" --save-prefs
+  #- arduino --pref "build.warn_data_percentage=75" --save-prefs
+  #- arduino --pref "boardsmanager.additional.urls=https://dl.espressif.com/dl/package_esp32_index.json" --save-prefs
+  #- arduino --install-boards esp32:esp32 &>/dev/null
+  #- arduino --board $BOARD --save-prefs
+  #- arduino --preserve-temp-files --verbose-build --verify $PWD/examples/$EXAMPLE/$EXAMPLE.ino &>/dev/null
+  #- find /tmp -name \*.partitions.bin -exec rm {} \; #
+  #- find /tmp -name \*.bin -exec mv {} $M5_SD_BUILD_DIR/TobozoLauncher.bin \; #
+  #- cp $M5_SD_BUILD_DIR/TobozoLauncher.bin $M5_SD_BUILD_DIR/menu.bin
+  #- echo "Fake Binary" >> $M5_SD_BUILD_DIR/Downloader.bin
+  #- echo "Main APPs Compilation successful, now compiling deps"
+  #- cd $SDAPP_FOLDER
+  #- ./gen-apps.sh
+  #- echo "Fetching precompiled projects"
+  #- ./get-precompiled.sh
+  #- ls $M5_SD_BUILD_DIR/ -la
+  #- sleep 15 # give some time to the logs to come up  
+
+before_deploy:
+  # Set up git user name and tag this commit
+  #- cd $PWD
+  
+  #if ! [[ $TRAVIS_TAG ]]; then
+  #  git config --global user.email "travis@travis-ci.org"
+  #  git config --global user.name "Travis CI"
+  #  git tag ${TRAVIS_TAG}
+  #fi
+
+  #- cd /home/travis/build/tobozo/
+  #- echo "#define M5_SD_UPDATER_VERSION F(\"${TRAVIS_TAG}\")" > $REPO_NAME/src/gitTagVersion.h
+  #- rm -Rf $REPO_NAME/examples/M5Stack-SD-Menu/SD-Apps
+  #- rm -Rf $REPO_NAME/examples/M5Stack-SD-Menu/SD-Content
+  #- zip -r $TRAVIS_BUILD_DIR/$REPO_NAME.zip $REPO_NAME -x *.git*
+  #- cd $M5_SD_BUILD_DIR 
+  #- zip -r $TRAVIS_BUILD_DIR/$ARCHIVE_ZIP ./
+  #- cd $TRAVIS_BUILD_DIR
+
+  # - export BODY=$(cat CHANGELOG.md) # boo! Travis doesn't like multiline body
+  
+#deploy:
+#  provider: releases
+#  api_key: $GH_TOKEN
+#  overwrite: true
+#  skip_cleanup: true
+#  target_commitish: $TRAVIS_COMMIT
+#  tag_name: $TRAVIS_TAG
+#  name: SD-Extras-autorelease $TRAVIS_TAG
+#  body: Automated release from Travis CI with added SD Apps binary files from Arduino compilation 
+#  draft: true
+#  file_glob: true
+#  file: 
+#    - $TRAVIS_BUILD_DIR/$ARCHIVE_ZIP
+#  #  - $TRAVIS_BUILD_DIR/$REPO_NAME.zip
+#  #file: $TRAVIS_BUILD_DIR/SD-Apps-Folder.zip
+#  on:
+#    tags: true
+#    branch: master
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+  webhooks:
+    urls:
+      #- https://webhooks.gitter.im/e/2d1ffb10865e412333a9
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
+
+    
+    

@@ -31,6 +31,8 @@
  *
  */
 
+
+
 #define TJE_IMPLEMENTATION
 
 uint8_t** huffsize = NULL;
@@ -54,7 +56,7 @@ void tinyJpegEncoderInit() {
     huffcode = (uint16_t**)calloc(4*256, sizeof(uint16_t));
     for(byte i=0; i<4; i++) {
       huffcode[i] = (uint16_t*)calloc(256, sizeof(uint16_t) );
-    }    
+    }
   }
 }
 
@@ -915,7 +917,7 @@ static void tjei_huff_expand(TJEState* state)
     for(byte i=0; i<4; i++) {
       *huffcode[i] = {'\0'};
     }
-    
+
     for ( int i = 0; i < 4; ++i ) {
         assert (256 >= spec_tables_len[i]);
         tjei_huff_get_code_lengths(huffsize[i], state->ht_bits[i]);
